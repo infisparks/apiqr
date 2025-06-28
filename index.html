@@ -36,10 +36,26 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <script>
+    // On load, check URL for token and auto-fetch
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      // Try to get named parameter 'token'
+      let token = params.get('token');
+      // If no named param, fallback to raw query string (e.g. ?99583991572)
+      const raw = window.location.search.substring(1);
+      if (!token && raw && !raw.includes('=')) {
+        token = raw;
+      }
+      if (token) {
+        document.getElementById('tokenInput').value = token;
+        fetchQRCode();
+      }
+    });
+
     function fetchQRCode() {
-      const token = document.getElementById("tokenInput").value.trim();
+      const token = document.getElementById('tokenInput').value.trim();
       if (!token) {
-        alert("Please enter a token.");
+        alert('Please enter a token.');
         return;
       }
 
@@ -49,8 +65,8 @@
         .then(res => res.json())
         .then(data => {
           const qrText = data.qr;
-          document.getElementById("qrcode").innerHTML = "";
-          new QRCode(document.getElementById("qrcode"), {
+          document.getElementById('qrcode').innerHTML = '';
+          new QRCode(document.getElementById('qrcode'), {
             text: qrText,
             width: 256,
             height: 256
@@ -58,7 +74,7 @@
         })
         .catch(err => {
           console.error(err);
-          alert("Failed to fetch QR code.");
+          alert('Failed to fetch QR code.');
         });
     }
   </script>
